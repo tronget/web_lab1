@@ -107,7 +107,7 @@
                 right: 20px;
                 cursor: pointer;
                 transition: 0.2s;
-                border: #333 1.5px solid;
+                border: #333 2px solid;
             }
 
             .submit_btn:hover {
@@ -164,8 +164,28 @@
                 padding-right: 10px;
             }
 
+            .incorrect_input {
+                position: relative;
+            }
+
+            .incorrect_input::before {
+                content: "Введите корректное значение!";
+                display: block;
+                color: red;
+                font-weight: 900;
+                position: absolute;
+                bottom: -45px;
+                height: 40px;
+                left: 0;
+                right: 0;
+                margin: 0 auto;
+                width: fit-content;
+                text-align: center;
+            }
+
         </style>
-        <link rel="stylesheet" href="styles.css" />
+
+        <script type="module" src="../scripts/script.js" async></script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Lab 1</title>
@@ -177,10 +197,10 @@
             <form id="form" action="#" method="post">
 
                 <div class="flex_column">
-                    <div class="input_container">
+                    <div class="input_container x_container">
                         <label for="x_select">Выберите X:</label>
                         <select id="x_select" name="x_input">
-                            <option value="">Выберите X</option>
+                            <option value="#">Выберите X</option>
                             <option value="-2">-2</option>
                             <option value="-1.5">-1.5</option>
                             <option value="-1">-1</option>
@@ -193,7 +213,7 @@
                         </select>
                     </div>
 
-                    <div class="input_container">
+                    <div class="input_container y_container">
                         <label for="y_input">Введите Y:</label>
                         <input type="number" id="y_input" name="y_input" placeholder="Введите Y (-3 до 3)">
                     </div>
