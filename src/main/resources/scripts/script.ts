@@ -1,12 +1,9 @@
-import {checkBoundaries, addClassUntilTrue} from "./functions.js";
-import {
-    x_container, y_container, r_container,
-    x_select, y_input, r_options, form
-} from "./variables.js";
+import {addClassUntilTrue, checkBoundaries} from "./functions.js";
+import {form, r_container, r_options, x_container, x_select, y_container, y_input} from "./variables.js";
 
 
 const checkY = (): boolean => {
-    const value: number = y_input.valueAsNumber;
+    const value: number = getY();
 
     if (isNaN(value)) return false;
 
@@ -14,7 +11,7 @@ const checkY = (): boolean => {
 }
 
 const checkX = (): boolean => {
-    const value: number = Number(x_select.value);
+    const value: number = getX();
 
     if (isNaN(value)) return false;
 
@@ -22,19 +19,11 @@ const checkX = (): boolean => {
 }
 
 const checkR = (): boolean => {
-    if (!r_options.some(el => el.checked)) {
-        return false;
-    }
+    const value: number = getR();
 
-    for (const el of r_options) {
-        if (el.checked) {
-            const value: number = Number(el.value);
+    if (isNaN(value)) return false;
 
-            if (isNaN(value)) return false;
-
-            return checkBoundaries(value, 1, 3);
-        }
-    }
+    return checkBoundaries(value, 1, 3);
 }
 
 const markX = () => {
@@ -42,12 +31,30 @@ const markX = () => {
 }
 
 const markY = () => {
-    addClassUntilTrue(checkY, y_container, "incorrect_input")
+    addClassUntilTrue(checkY, y_container, "incorrect_input");
 }
 
 const markR = () => {
-    addClassUntilTrue(checkR, r_container, "incorrect_input")
+    addClassUntilTrue(checkR, r_container, "incorrect_input");
 }
+
+const getX = (): number => {
+    return Number(x_select.value);
+}
+
+const getY = (): number => {
+    return y_input.valueAsNumber
+}
+
+const getR = (): number => {
+    for (const el of r_options) {
+        if (el.checked) {
+            return Number(el.value);
+        }
+    }
+    return NaN;
+}
+
 
 const markAll = () => {
     markX();
@@ -61,9 +68,47 @@ x_select.addEventListener("change", markX);
 y_input.addEventListener("blur", markY);
 
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
     if (!(checkR() && checkX() && checkY())) {
-        e.preventDefault();
-        markAll()
+        markAll();
+        return;
     }
+
+    // markAll();
+    form.reset();
+
+    const request = new Request("https://localhost:8080", {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        },
+        body: JSON.stringify({
+            x: getX(),
+            y: getY(),
+            r: getR()
+        })
+    })
+
+    const json = await sendRequest(request);
+
+    console.log(json);
 })
+
+const sendRequest = async (request: Request) => {
+
+    try {
+        const response = await fetch(request);
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`)
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error(error.message)
+    }
+}

@@ -6,4 +6,4 @@ export const y_input = document.getElementById("y_input") as HTMLInputElement;
 export const r_options: HTMLInputElement[] = Array.from(
     document.querySelectorAll("input[name='r_input']")
 );
-export const form: HTMLElement = document.getElementById("form");
+export const form = document.getElementById("form") as HTMLFormElement;
