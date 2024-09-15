@@ -5,8 +5,8 @@ WORKDIR /app
 
 COPY frontend/src/ ./frontend/src
 COPY nginx.conf ./nginx.conf
-RUN npm install typescript
-RUN tsc ./frontend/src/scripts
+RUN npm install typescript -g
+RUN tsc --project ./frontend/src/scripts/tsconfig.json
 
 FROM nginx:stable-alpine
 COPY --from=build app/frontend/src/ /usr/share/nginx/html
