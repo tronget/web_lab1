@@ -1,0 +1,21 @@
+networks:
+  tronget:
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - tronget
+
+  backend:
+    build:
+      context: backend
+    networks:
+      - tronget

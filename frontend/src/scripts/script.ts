@@ -2,6 +2,7 @@ import {addClassUntilTrue, checkBoundaries} from "./functions.js";
 import {form, r_container, r_options, x_container, x_select, y_container, y_input} from "./variables.js";
 
 
+
 const checkY = (): boolean => {
     const value: number = getY();
 
@@ -77,10 +78,9 @@ form.addEventListener("submit", async (e) => {
         return;
     }
 
-    // markAll();
-    form.reset();
+    markAll();
 
-    const request = new Request("https://localhost:8080", {
+    const request = new Request("http://localhost/api/", {
         method: "POST",
         headers: {
             "Content-type": "application/json; charset=UTF-8"
@@ -95,6 +95,8 @@ form.addEventListener("submit", async (e) => {
     const json = await sendRequest(request);
 
     console.log(json);
+
+    form.reset();
 })
 
 const sendRequest = async (request: Request) => {
