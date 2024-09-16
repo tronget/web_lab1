@@ -1,5 +1,5 @@
 import {addClassUntilTrue, checkBoundaries} from "./functions.js";
-import {form, r_container, r_options, x_container, x_select, y_container, y_input} from "./variables.js";
+import {form, r_container, r_options, x_container, x_select, y_container, y_input, table} from "./variables.js";
 
 
 
@@ -94,6 +94,18 @@ form.addEventListener("submit", async (e) => {
 
     const json = await sendRequest(request);
 
+    table.innerHTML += `
+        <tbody>
+            <tr>
+                <td>${json.x}</td>
+                <td>${json.y}</td>
+                <td>${json.r}</td>
+                <td>${json.hit}</td>
+                <td>${json.scriptTime}</td>
+                <td>${json.time}</td>
+            </tr>
+        </tbody>
+    `
     console.log(json);
 
     form.reset();

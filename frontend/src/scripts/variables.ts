@@ -7,3 +7,4 @@ export const r_options: HTMLInputElement[] = Array.from(
     document.querySelectorAll("input[name='r_input']")
 );
 export const form = document.getElementById("form") as HTMLFormElement;
+export const table = document.getElementById("myTable");
