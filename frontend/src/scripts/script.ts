@@ -1,100 +1,122 @@
-import {addClassUntilTrue, checkBoundaries} from "./functions.js";
-import {form, r_container, r_options, x_container, x_select, y_container, y_input, table} from "./variables.js";
-
-
-
-const checkY = (): boolean => {
-    const value: number = getY();
-
-    if (isNaN(value)) return false;
-
-    return checkBoundaries(value, -3, 3);
-}
-
-const checkX = (): boolean => {
-    const value: number = getX();
-
-    if (isNaN(value)) return false;
-
-    return checkBoundaries(value, -2, 2);
-}
-
-const checkR = (): boolean => {
-    const value: number = getR();
-
-    if (isNaN(value)) return false;
-
-    return checkBoundaries(value, 1, 3);
-}
-
-const markX = () => {
-    addClassUntilTrue(checkX, x_container, "incorrect_input");
-}
-
-const markY = () => {
-    addClassUntilTrue(checkY, y_container, "incorrect_input");
-}
-
-const markR = () => {
-    addClassUntilTrue(checkR, r_container, "incorrect_input");
-}
+import { addClassUntilTrue, checkBoundaries } from "./functions.js";
+import {
+  form,
+  rContainer,
+  rOptions,
+  xContainer,
+  xSelect,
+  yContainer,
+  yInput,
+  table,
+} from "./variables.js";
 
 const getX = (): number => {
-    return Number(x_select.value);
-}
+  return Number(xSelect.value);
+};
 
 const getY = (): number => {
-    return y_input.valueAsNumber
-}
+  return yInput.valueAsNumber;
+};
 
 const getR = (): number => {
-    for (const el of r_options) {
-        if (el.checked) {
-            return Number(el.value);
-        }
+  // eslint-disable-next-line no-restricted-syntax
+  for (const el of rOptions) {
+    if (el.checked) {
+      return Number(el.value);
     }
-    return NaN;
-}
+  }
+  return NaN;
+};
 
+const checkY = (): boolean => {
+  const value: number = getY();
+
+  if (Number.isNaN(value)) return false;
+
+  return checkBoundaries(value, -3, 3);
+};
+
+const checkX = (): boolean => {
+  const value: number = getX();
+
+  if (Number.isNaN(value)) return false;
+
+  return checkBoundaries(value, -2, 2);
+};
+
+const checkR = (): boolean => {
+  const value: number = getR();
+
+  if (Number.isNaN(value)) return false;
+
+  return checkBoundaries(value, 1, 3);
+};
+
+const markX = () => {
+  addClassUntilTrue(checkX, xContainer, "incorrect_input");
+};
+
+const markY = () => {
+  addClassUntilTrue(checkY, yContainer, "incorrect_input");
+};
+
+const markR = () => {
+  addClassUntilTrue(checkR, rContainer, "incorrect_input");
+};
 
 const markAll = () => {
-    markX();
-    markY();
-    markR();
-}
+  markX();
+  markY();
+  markR();
+};
 
+xSelect.addEventListener("change", markX);
 
-x_select.addEventListener("change", markX);
+yInput.addEventListener("blur", markY);
 
-y_input.addEventListener("blur", markY);
+const sendRequest = async (request: Request) => {
+  try {
+    const response = await fetch(request);
 
-
-form.addEventListener("submit", async (e) => {
-
-    e.preventDefault();
-
-    if (!(checkR() && checkX() && checkY())) {
-        markAll();
-        return;
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
     }
 
+    return await response.json();
+  } catch (error) {
+    console.error(error.message);
+    return null;
+  }
+};
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  if (!(checkR() && checkX() && checkY())) {
     markAll();
+    return;
+  }
 
-    const request = new Request("http://localhost/api/", {
-        method: "POST",
-        headers: {
-            "Content-type": "application/json; charset=UTF-8"
-        },
-        body: JSON.stringify({
-            x: getX(),
-            y: getY(),
-            r: getR()
-        })
-    })
+  markAll();
 
-    const json = await sendRequest(request);
+  const request = new Request("http://localhost/api/", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+    body: JSON.stringify({
+      x: getX(),
+      y: getY(),
+      r: getR(),
+    }),
+  });
 
-    table.innerHTML += `
+  const json = await sendRequest(request);
+  if (json == null) {
+    return;
+  }
+
+  table.innerHTML += `
         <tbody>
             <tr>
                 <td>${json.x}</td>
@@ -105,24 +127,7 @@ form.addEventListener("submit", async (e) => {
                 <td>${json.time}</td>
             </tr>
         </tbody>
-    `
-    console.log(json);
+    `;
 
-    form.reset();
-})
-
-const sendRequest = async (request: Request) => {
-
-    try {
-        const response = await fetch(request);
-
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`)
-        }
-
-        return await response.json();
-
-    } catch (error) {
-        console.error(error.message)
-    }
-}
+  form.reset();
+});
