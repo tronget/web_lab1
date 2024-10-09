@@ -1,5 +1,5 @@
 module.exports = {
-    parser: "@typescript-eslint/parser", // Парсер для TypeScript
+    parser: "@typescript-eslint/parser",
     extends: [
         "airbnb-base",
         "airbnb-typescript/base",
@@ -8,11 +8,11 @@ module.exports = {
         'plugin:prettier/recommended',
     ],
     parserOptions: {
-        project: "./src/scripts/tsconfig.json", // Укажите путь к вашему tsconfig.json
+        project: "./src/scripts/tsconfig.json",
         tsconfigRootDir: __dirname,
         sourceType: "module",
     },
-    plugins: ["@typescript-eslint", "import"], // Подключение плагинов
+    plugins: ["@typescript-eslint", "import"],
     rules: {
         // 'prettier/prettier': 'error',
         "import/extensions": [
@@ -20,11 +20,6 @@ module.exports = {
             "ignorePackages",
             { ts: "never" },
         ],
-        "@typescript-eslint/no-unused-vars": ["error"], // Ошибка на неиспользуемые переменные
+        "@typescript-eslint/no-unused-vars": ["error"],
     },
-    // settings: {
-    //     react: {
-    //         version: "detect", // Автодетект версии React
-    //     },
-    // },
 };
