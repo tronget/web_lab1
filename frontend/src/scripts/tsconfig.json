@@ -10,5 +10,8 @@
     "script.ts",
     "functions.ts",
     "variables.ts"
+  ],
+  "include": [
+    "../../.eslintrc.js"
   ]
 }

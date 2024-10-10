@@ -1,55 +1,44 @@
 package com.tronget.network;
 
 import com.fastcgi.FCGIInterface;
-import com.tronget.DotChecker;
-
-import java.nio.charset.StandardCharsets;
-import java.time.LocalTime;
+import com.tronget.util.Benchmark;
+import com.tronget.util.DotChecker;
 import java.util.Map;
 
 public class ResponseManager {
-    public static void send() {
-        var fcgiInterface = new FCGIInterface();
-        while (fcgiInterface.FCGIaccept() >= 0) {
+  public static void work() {
+    var fcgiInterface = new FCGIInterface();
+    while (fcgiInterface.FCGIaccept() >= 0) {
+      Message message = new Message();
+      double scriptTime = Benchmark.test(() -> script(message));
+      if (!message.isValid()) {
+        continue;
+      }
+      message.setScriptTime(scriptTime);
 
-            long start = System.currentTimeMillis();
-
-            boolean isHit = false;
-            Map<String, Double> json = RequestManager.getJSON();
-            if (json == null) {
-                continue;
-            }
-
-            Double r = json.get("r");
-            Double x = json.get("x");
-            Double y = json.get("y");
-
-            if (x != null && y != null && r != null) {
-                isHit = DotChecker.check(r, x, y);
-            }
-
-            long finish = System.currentTimeMillis();
-
-            double scriptTime = (double) (finish - start) / 1000;
-
-            var content = """
-                    {
-                       "hit": %b,
-                       "scriptTime": %f,
-                       "time": "%tT",
-                       "x": %f,
-                       "y": %f,
-                       "r": %f
-                    }
-                    """.formatted(isHit, scriptTime, LocalTime.now(), x, y, r);
-            var httpResponse = """
-                     HTTP/1.1 200 OK
-                     Content-Type: application/json
-                     Content-Length: %d
-
-                     %s
-                     """.formatted(content.getBytes(StandardCharsets.UTF_8).length, content);
-            System.out.println(httpResponse);
-        }
+      Response response = new Response(200, "OK", "application/json", message.toString());
+      Sender sender = new SenderImpl();
+      sender.send(response);
     }
+  }
+
+  public static void script(Message message) {
+    boolean isHit = false;
+    Map<String, Double> json = RequestManager.getJSON();
+    if (json == null) {
+      return;
+    }
+
+    Double r = json.get("r");
+    Double x = json.get("x");
+    Double y = json.get("y");
+
+    if (x != null && y != null && r != null) {
+      isHit = DotChecker.check(r, x, y);
+      message.setR(r);
+      message.setX(x);
+      message.setY(y);
+      message.setHit(isHit);
+    }
+  }
 }
